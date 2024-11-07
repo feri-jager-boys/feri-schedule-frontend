@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">urnikprojekt</string>
+    <string name="title_activity_main">urnikprojekt</string>
+    <string name="package_name">ionic.urnikprojekt</string>
+    <string name="custom_url_scheme">ionic.urnikprojekt</string>
+</resources>

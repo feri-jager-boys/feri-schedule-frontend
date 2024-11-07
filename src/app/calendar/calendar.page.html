@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Calendar
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-datetime size="cover" [(ngModel)]="selectedDate" (ionChange)="onDateChange()" ></ion-datetime>
+  <ion-item>
+    <ion-label>Select Color</ion-label>
+    <ion-select [(ngModel)]="selectedColor">
+      <ion-select-option value="red">Red</ion-select-option>
+      <ion-select-option value="green">Green</ion-select-option>
+      <ion-select-option value="blue">Blue</ion-select-option>
+      <ion-select-option value="yellow">Yellow</ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Add note</ion-label>
+    <ion-input [(ngModel)]="noteText" name="noteText"></ion-input>
+  </ion-item>
+  <ion-button expand="block" (click)="addNote()">Add note</ion-button>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Notes for {{selectedDate| date: 'dd MMM, yyyy'}}</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let note of getNotesForDate(selectedDate); let i = index">
+      <ion-label>{{note}}</ion-label>
+      <ion-button slot="end" color="primary" (click)="editNote(i)">Edit</ion-button>
+      <ion-button slot="end" color="danger" (click)="deleteNote(i)">Delete</ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>
