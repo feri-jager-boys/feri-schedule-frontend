@@ -22,6 +22,11 @@ export const routes: Routes = [
           import('../assignments/assignments.page').then((m) => m.AssignmentsPage),
       },
       {
+        path: 'settings',
+        loadComponent: () =>
+          import('../settings/settings.page').then((m) => m.SettingsPage),
+      },
+      {
         path: '',
         redirectTo: '/tabs/calendar',
         pathMatch: 'full',

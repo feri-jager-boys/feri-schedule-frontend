@@ -1,0 +1,88 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Settings
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <!-- Condensed Header -->
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Settings</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Program Selection -->
+    <ion-item lines="none">
+      <ion-select
+        [(ngModel)]="selectedProgram"
+        (ngModelChange)="fetchProgramYears()"
+        aria-label="program"
+        placeholder="{{ selectedProgram ? selectedProgram : 'Select Program' }}">
+        <ion-select-option *ngFor="let program of objectKeys(programs)" [value]="program">
+          {{ program }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+  <!-- Show Year Selection if Program is Selected -->
+  <ion-item *ngIf="selectedProgram" lines="none">
+    <ion-select 
+      [(ngModel)]="selectedYear"
+      (ngModelChange)="fetchProgramClasses()" 
+      aria-label="year"
+      placeholder="{{ selectedYear ? selectedYear + '. letnik' : 'Select Year' }}">
+      <ion-select-option *ngFor="let year of years" [value]="year">
+        {{ year + '. letnik' }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Show Class List if Program and Year are Selected -->
+  <ion-list *ngIf="selectedProgram && selectedYear">
+    <ion-item-divider>
+      <ion-title>
+        CLASS SETTINGS
+      </ion-title>
+    </ion-item-divider>
+    <ion-item *ngFor="let className of objectKeys(classes)">
+      <ion-label>
+        {{ className }}
+      </ion-label>
+      <ion-icon slot="end" name="chevron-forward-outline" (click)="openClassOptionsModal(className)"></ion-icon>
+    </ion-item>
+  </ion-list>
+
+  <!-- Modal for Class Options -->
+  <ion-modal #classOptionsModal (willDismiss)="onWillDismiss($event)">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-icon slot="start" name="chevron-back-outline" (click)="closeClassOptionsModal()"></ion-icon>
+          <ion-title>
+            {{ currentClassName }}
+          </ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content>
+        <!-- Check if currentClassName and classes[currentClassName] are set -->
+        <ion-list *ngIf="currentClassName && classes[currentClassName]" class="group-list">
+          <ion-item *ngFor="let group of classes[currentClassName]">
+            <ion-label>
+              {{ group[0] }} <!-- name of the group -->
+            </ion-label>
+            <!-- visibility of the group -->
+            <ion-checkbox slot="end" [(ngModel)]="group[1]"></ion-checkbox>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+
+    </ng-template>
+  </ion-modal>
+
+</ion-content>
+

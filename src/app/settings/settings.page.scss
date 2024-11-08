@@ -1,0 +1,14 @@
+/* Chevron Icon Styling */
+ion-icon {
+  font-size: 1.5em;
+}
+
+ion-checkbox {
+  --background: #fff;
+  --border-color: #e4e4e4;
+}
+
+/* Active Checkboxes */
+ion-checkbox[checked] {
+  --background: var(--ion-color-primary);
+}

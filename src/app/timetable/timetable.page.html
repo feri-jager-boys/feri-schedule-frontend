@@ -9,25 +9,25 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
+      <ion-title size="large">Timetable</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-grid>
     <ion-row>
       <ion-col size="2" class="timetable-header">Time</ion-col>
-      <ion-col size="2" class="timetable-header">Monday</ion-col>
-      <ion-col size="2" class="timetable-header">Tuesday</ion-col>
-      <ion-col size="2" class="timetable-header">Wednesday</ion-col>
-      <ion-col size="2" class="timetable-header">Thursday</ion-col>
-      <ion-col size="2" class="timetable-header">Friday</ion-col>
+      <ion-col size="2" class="timetable-header">Mon</ion-col>
+      <ion-col size="2" class="timetable-header">Tue</ion-col>
+      <ion-col size="2" class="timetable-header">Wed</ion-col>
+      <ion-col size="2" class="timetable-header">Thu</ion-col>
+      <ion-col size="2" class="timetable-header">Fri</ion-col>
     </ion-row>
     <ion-row *ngFor="let slot of timetable">
-      <ion-col size="2">{{ slot.time }}</ion-col>
-      <ion-col size="2">{{ slot.monday }}</ion-col>
-      <ion-col size="2">{{ slot.tuesday }}</ion-col>
-      <ion-col size="2">{{ slot.wednesday }}</ion-col>
-      <ion-col size="2">{{ slot.thursday }}</ion-col>
-      <ion-col size="2">{{ slot.friday }}</ion-col>
+      <ion-col size="2" class="timetable-cell">{{ slot.time }}</ion-col>
+      <ion-col size="2" class="timetable-cell">{{ slot.monday }}</ion-col>
+      <ion-col size="2" class="timetable-cell">{{ slot.tuesday }}</ion-col>
+      <ion-col size="2" class="timetable-cell">{{ slot.wednesday }}</ion-col>
+      <ion-col size="2" class="timetable-cell">{{ slot.thursday }}</ion-col>
+      <ion-col size="2" class="timetable-cell">{{ slot.friday }}</ion-col>
     </ion-row>
   </ion-grid>
 

@@ -1,0 +1,13 @@
+
+
+ion-grid {
+  margin: 20px;
+}
+
+ion-row {
+  height: 3rem;
+}
+
+ion-row:nth-child(even) .timetable-cell {
+  background-color: #f9f9f9; /* Alternating row color */
+}
