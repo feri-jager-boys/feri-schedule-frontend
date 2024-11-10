@@ -1,5 +1,8 @@
 {
   "name": "ionic-app-base",
   "integrations": {},
-  "type": "angular-standalone"
+  "type": "angular-standalone",
+  "server":{
+    "watch": true
+  }
 }

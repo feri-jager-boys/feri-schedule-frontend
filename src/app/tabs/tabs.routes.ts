@@ -27,15 +27,25 @@ export const routes: Routes = [
           import('../settings/settings.page').then((m) => m.SettingsPage),
       },
       {
+        path: 'login',
+        loadComponent: () =>
+          import('../login/login.page').then((m) => m.LoginPage),
+      },
+      {
+        path: 'register',
+        loadComponent: () =>
+          import('../register/register.page').then((m) => m.RegisterPage),
+      },
+      {
         path: '',
-        redirectTo: '/tabs/calendar',
+        redirectTo: '/tabs/login',
         pathMatch: 'full',
       },
     ],
   },
   {
     path: '',
-    redirectTo: '/tabs/calendar',
+    redirectTo: '/tabs/login',
     pathMatch: 'full',
   },
 ];

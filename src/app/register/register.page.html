@@ -1,0 +1,63 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Register</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+    <ion-grid>
+      <ion-row class="ion-justify-content-center">
+        <ion-col size="12" size-md="6" size-lg="4">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Register</ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              <ion-item>
+                <ion-label position="floating">Full Name</ion-label>
+                <ion-input type="text" formControlName="fullName"></ion-input>
+              </ion-item>
+              <div *ngIf="registerForm.controls['fullName'].invalid && registerForm.controls['fullName'].touched">
+                <ion-text color="danger">Full Name is required</ion-text>
+              </div>
+
+              <ion-item>
+                <ion-label position="floating">Email</ion-label>
+                <ion-input type="email" formControlName="email"></ion-input>
+              </ion-item>
+              <div *ngIf="registerForm.controls['email'].invalid && registerForm.controls['email'].touched">
+                <ion-text color="danger">Valid email is required</ion-text>
+              </div>
+
+              <ion-item>
+                <ion-label position="floating">Password</ion-label>
+                <ion-input type="password" formControlName="password"></ion-input>
+              </ion-item>
+              <div *ngIf="registerForm.controls['password'].invalid && registerForm.controls['password'].touched">
+                <ion-text color="danger">Password must be at least 6 characters long</ion-text>
+              </div>
+
+              <ion-item>
+                <ion-label position="floating">Confirm Password</ion-label>
+                <ion-input type="password" formControlName="confirmPassword"></ion-input>
+              </ion-item>
+              <div *ngIf="registerForm.controls['confirmPassword'].invalid && registerForm.controls['confirmPassword'].touched">
+                <ion-text color="danger">Please confirm your password</ion-text>
+              </div>
+
+              <ion-button expand="block" type="submit" [disabled]="registerForm.invalid" class="ion-margin-top">Register</ion-button>
+
+              <ion-item lines="none" class="ion-text-center ion-margin-top">
+                <ion-label>
+                  <p>Already have an account? <a href="/login">Login</a></p>
+                </ion-label>
+              </ion-item>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>
