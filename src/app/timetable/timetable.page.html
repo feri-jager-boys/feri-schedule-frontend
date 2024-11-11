@@ -29,14 +29,25 @@
       <ion-col size="2" class="timetable-header">Thu</ion-col>
       <ion-col size="2" class="timetable-header">Fri</ion-col>
     </ion-row>
+  
     <ion-row *ngFor="let slot of timetable">
       <ion-col size="2" class="timetable-cell">{{ slot.time }}</ion-col>
-      <ion-col size="2" class="timetable-cell">{{ slot.monday }}</ion-col>
-      <ion-col size="2" class="timetable-cell">{{ slot.tuesday }}</ion-col>
-      <ion-col size="2" class="timetable-cell">{{ slot.wednesday }}</ion-col>
-      <ion-col size="2" class="timetable-cell">{{ slot.thursday }}</ion-col>
-      <ion-col size="2" class="timetable-cell">{{ slot.friday }}</ion-col>
+  
+      <ng-container *ngFor="let day of days">
+        <ion-col
+          size="2"
+          class="timetable-cell"
+          *ngIf="getTimetableEntry(slot, day)?.rowSpan !== 0"
+          [attr.rowSpan]="getTimetableEntry(slot, day)?.rowSpan">
+          <div class="timetable-cell-content" *ngIf="getTimetableEntry(slot, day)">
+            <div>{{ getTimetableEntry(slot, day)?.subject }}</div>
+            <div>{{ getTimetableEntry(slot, day)?.professor }}</div>
+            <div>{{ getTimetableEntry(slot, day)?.classroom }}</div>
+          </div>
+        </ion-col>
+      </ng-container>
     </ion-row>
   </ion-grid>
-
+  
+  
 </ion-content>

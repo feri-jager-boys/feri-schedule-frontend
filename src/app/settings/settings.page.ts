@@ -92,7 +92,6 @@ export class SettingsPage implements OnInit {
 
     // save selected grade id
     this.selectedGradeId = selectedGrade.gradeId;
-
     // gets subjects array from GradeItem object
     this.classes = selectedGrade.subjects;
   }

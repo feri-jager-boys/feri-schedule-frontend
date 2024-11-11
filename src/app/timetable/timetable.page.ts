@@ -5,6 +5,21 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
 
 import { ProgramDataSharingService } from '../../services/program-data-sharing.service'; // holds selectedProgram, selectedYear, classes
 
+interface TimetableEntry{
+  subject?: string;
+  professor?: string;
+  classroom?: string;
+  rowSpan?: number;
+}
+
+interface TimetableSlot{
+  time: string;
+  monday?: TimetableEntry;
+  tuesday?: TimetableEntry;
+  wednesday?: TimetableEntry;
+  thursday?: TimetableEntry;
+  friday?: TimetableEntry;
+}
 
 @Component({
   selector: 'app-tab2',
@@ -23,27 +38,34 @@ export class TimetablePage implements OnInit {
   timetableData: any[] = [];                  // holds the timetable data
   
   timetableWeekNum = 3; // used to fetch weekly timetable
-  timetable = [
-    { time: '7:00 ', monday: null, tuesday: null, wednesday: null, thursday: null, friday: null },
-    { time: '8:00 ', monday: 'Math', tuesday: 'Science', wednesday: 'History', thursday: 'Art', friday: 'PE' },
-    { time: '9:00 ', monday: 'English', tuesday: 'Math', wednesday: 'Science', thursday: 'Music', friday: 'Geography' },
-    { time: '10:00', monday: null, tuesday: null, wednesday: null, thursday: null, friday: null },
-    { time: '11:00', monday: null, tuesday: null, wednesday: null, thursday: null, friday: null },
-    { time: '12:00', monday: null, tuesday: null, wednesday: null, thursday: null, friday: null },
-    { time: '13:00', monday: null, tuesday: null, wednesday: null, thursday: null, friday: null },
-    { time: '14:00', monday: null, tuesday: null, wednesday: null, thursday: null, friday: null },
-    { time: '15:00', monday: null, tuesday: null, wednesday: null, thursday: null, friday: null },
-    { time: '16:00', monday: null, tuesday: null, wednesday: null, thursday: null, friday: null },
-    { time: '17:00', monday: null, tuesday: null, wednesday: null, thursday: null, friday: null },
-    { time: '18:00', monday: null, tuesday: null, wednesday: null, thursday: null, friday: null },
-    { time: '19:00', monday: null, tuesday: null, wednesday: null, thursday: null, friday: null },
-    { time: '20:00', monday: null, tuesday: null, wednesday: null, thursday: null, friday: null },
-  ];
+  timetable: TimetableSlot[] = [];
+  days: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday')[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+
 
   constructor(public dataSharingService: ProgramDataSharingService) {}
 
   ngOnInit() {
     this.loadSharedData();
+    this.initilizeTimetable();
+  }
+
+  private initilizeTimetable() {
+    const times = [
+      "7:00 - 8:00",
+      "8:00 - 9:00",
+      "9:00 - 10:00",
+      "10:00 - 11:00",
+      "11:00 - 12:00",
+      "12:00 - 13:00",
+      "13:00 - 14:00",
+      "14:00 - 15:00",
+      "15:00 - 16:00",
+      "16:00 - 17:00",
+      "17:00 - 18:00",
+      "18:00 - 19:00",
+      "19:00 - 20:00",
+    ];
+    this.timetable = times.map(time=>({time}));
   }
 
   ionViewWillEnter() {
@@ -52,6 +74,7 @@ export class TimetablePage implements OnInit {
       console.log('gradeId changed, fetching timetable data');
       this.loadSharedData();
       this.fetchTimetableData();
+      this.populateTimetable();
     }
 
   }
@@ -77,12 +100,58 @@ export class TimetablePage implements OnInit {
     }
   }
 
-  // dynamically add subject to timetable
-  addSubject(time: string, day: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday', subject: string) {
-    const slot = this.timetable.find(item => item.time === time);
-    if (slot) {
-      slot[day] = subject;
-    }
+
+  private populateTimetable(){
+    const dayMapping: { [key: number]: Exclude<keyof TimetableSlot, 'time'> } ={
+      0:'monday',
+      1:'tuesday',
+      2:'wednesday',
+      3:'thursday',
+      4:'friday'
+    };
+    this.timetableData.forEach(entry => {
+      console.log("entry: ", entry);
+      const day = dayMapping[entry.day];
+  
+      // Calculate start and end indices based on time
+      const startIndex = this.getTimeIndex(entry.hourFrom);
+      const endIndex = this.getTimeIndex(entry.hourTo) - 1;
+  
+      // Calculate row span
+      const rowSpan = endIndex - startIndex + 1;
+  
+      // Fill the timetable slots with the entry data
+      for (let i = startIndex; i <= endIndex; i++) {
+        if (i === startIndex) {
+          this.assignTimetableEntry(this.timetable[i], day, {
+            subject: entry.subject,
+            professor: entry.professor,
+            classroom: entry.classroom,
+            rowSpan: rowSpan
+          });
+        } else {
+          this.assignTimetableEntry(this.timetable[i], day, { rowSpan: 0 });
+        }
+      }
+    });
+  }
+  
+private assignTimetableEntry(
+  slot: TimetableSlot,
+  day: Exclude<keyof TimetableSlot, 'time'>,
+  entry: TimetableEntry
+) {
+  slot[day] = entry;
+}
+
+getTimetableEntry(slot: TimetableSlot, day: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday') {
+  return slot[day];
+}
+
+
+private getTimeIndex(time: string): number {
+    const times = ["07:00", "08:00", "09:00", "10:00", "11:00"]; // Update based on your timetable slots
+    return times.indexOf(time);
   }
 
 }
