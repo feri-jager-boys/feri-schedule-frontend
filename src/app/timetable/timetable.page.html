@@ -12,6 +12,14 @@
       <ion-title size="large">Timetable</ion-title>
     </ion-toolbar>
   </ion-header>
+  <ion-item *ngIf="selectedProgram || selectedYear" lines="none">
+    <ion-label>
+      {{ selectedProgram }}
+    </ion-label>
+    <ion-label>
+      {{ selectedYear }}. letnik
+    </ion-label>
+  </ion-item>
   <ion-grid>
     <ion-row>
       <ion-col size="2" class="timetable-header">Time</ion-col>

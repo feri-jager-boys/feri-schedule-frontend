@@ -15,15 +15,22 @@
     </ion-toolbar>
   </ion-header>
 
+  <ion-item *ngIf="programs.length === 0" lines="none">
+    <ion-label>
+      Loading programs...
+    </ion-label>
+  </ion-item>
+
   <!-- Program Selection -->
     <ion-item lines="none">
       <ion-select
+        *ngIf="programs.length !== 0"
         [(ngModel)]="selectedProgram"
-        (ngModelChange)="fetchProgramYears()"
+        (ngModelChange)="getProgramYears()"
         aria-label="program"
         placeholder="{{ selectedProgram ? selectedProgram : 'Select Program' }}">
-        <ion-select-option *ngFor="let program of objectKeys(programs)" [value]="program">
-          {{ program }}
+        <ion-select-option *ngFor="let program of programs" [value]="program">
+          {{ program.name }}
         </ion-select-option>
       </ion-select>
     </ion-item>
@@ -32,7 +39,7 @@
   <ion-item *ngIf="selectedProgram" lines="none">
     <ion-select 
       [(ngModel)]="selectedYear"
-      (ngModelChange)="fetchProgramClasses()" 
+      (ngModelChange)="getProgramClasses()" 
       aria-label="year"
       placeholder="{{ selectedYear ? selectedYear + '. letnik' : 'Select Year' }}">
       <ion-select-option *ngFor="let year of years" [value]="year">
@@ -48,11 +55,11 @@
         CLASS SETTINGS
       </ion-title>
     </ion-item-divider>
-    <ion-item *ngFor="let className of objectKeys(classes)">
+    <ion-item *ngFor="let class of classes">
       <ion-label>
-        {{ className }}
+        {{ class }}
       </ion-label>
-      <ion-icon slot="end" name="chevron-forward-outline" (click)="openClassOptionsModal(className)"></ion-icon>
+      <ion-icon slot="end" name="chevron-forward-outline" (click)="openClassOptionsModal(class)"></ion-icon>
     </ion-item>
   </ion-list>
 
@@ -69,16 +76,10 @@
       </ion-header>
 
       <ion-content>
-        <!-- Check if currentClassName and classes[currentClassName] are set -->
-        <ion-list *ngIf="currentClassName && classes[currentClassName]" class="group-list">
-          <ion-item *ngFor="let group of classes[currentClassName]">
-            <ion-label>
-              {{ group[0] }} <!-- name of the group -->
-            </ion-label>
-            <!-- visibility of the group -->
-            <ion-checkbox slot="end" [(ngModel)]="group[1]"></ion-checkbox>
-          </ion-item>
-        </ion-list>
+        <!-- TODO: update for API, display list of possible Predavanje/RVs -->
+        <ion-item>
+          Coming soon... &#58;&#41;
+        </ion-item>
       </ion-content>
 
     </ng-template>

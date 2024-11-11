@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
+import { Component, OnInit } from '@angular/core';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonItem, IonLabel } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 
@@ -11,14 +11,18 @@ import { ProgramDataSharingService } from '../../services/program-data-sharing.s
   templateUrl: 'timetable.page.html',
   styleUrls: ['timetable.page.scss'],
   standalone: true,
-  imports: [IonCol, IonRow, IonGrid, IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent, CommonModule]
+  imports: [IonLabel, IonItem, IonCol, IonRow, IonGrid, IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent, CommonModule]
 })
-export class TimetablePage {
+export class TimetablePage implements OnInit {
 
-  selectedProgram!: string | null;
-  selectedYear!: number | null;
-  classes!: { [className: string]: [string, boolean][] }; // which classes are selected to show in timetable
+  selectedGradeId!: string | null;            // used to fetch weekly timetable
+  selectedProgram!: string | null;            // name of the program
+  selectedYear!: number | null;               // year of the program
+  classes!: string[] | null;                  // classes in the program (TODO: implement filter)
 
+  timetableData: any[] = [];                  // holds the timetable data
+  
+  timetableWeekNum = 3; // used to fetch weekly timetable
   timetable = [
     { time: '7:00 ', monday: null, tuesday: null, wednesday: null, thursday: null, friday: null },
     { time: '8:00 ', monday: 'Math', tuesday: 'Science', wednesday: 'History', thursday: 'Art', friday: 'PE' },
@@ -39,30 +43,38 @@ export class TimetablePage {
   constructor(public dataSharingService: ProgramDataSharingService) {}
 
   ngOnInit() {
-    // load shared data (that is set in settings page) on first initialization
     this.loadSharedData();
   }
 
   ionViewWillEnter() {
-    // Ensures loadSharedData is called every time the page is viewed
-    this.loadSharedData();
+    // load shared data and fetch timetable data if gradeId has changed (settings page)
+    if (this.selectedGradeId !== this.dataSharingService.getSelectedGradeId()) {
+      console.log('gradeId changed, fetching timetable data');
+      this.loadSharedData();
+      this.fetchTimetableData();
+    }
 
-    // debug check data
-    console.log('Selected Program: ', this.selectedProgram);
-    console.log('Selected Year: ', this.selectedYear);
-    console.log('Classes: ', this.classes);
-
-    // debug add subject to timetable
-    this.addSubject('11:00', 'monday', 'Physics');
-    this.addSubject('07:00', 'friday', 'History');
-    this.addSubject('16:00', 'wednesday', 'Physics');
-    this.addSubject('20:00', 'tuesday', 'Geography');
   }
 
   private loadSharedData() {
+    this.selectedGradeId = this.dataSharingService.getSelectedGradeId();
     this.selectedProgram = this.dataSharingService.getSelectedProgram();
     this.selectedYear = this.dataSharingService.getSelectedYear();
     this.classes = this.dataSharingService.getClasses();
+  }
+
+  private async fetchTimetableData() {
+    if (!this.selectedGradeId || !this.timetableWeekNum) return;
+
+    try {
+      const url = `http://localhost:3080/schedule/getFull/${this.selectedGradeId}/${this.timetableWeekNum}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      this.timetableData = data;
+      console.log("timetable data: ", this.timetableData); //debug
+    } catch (error) {
+      console.error('Error while getting timetable:', error);
+    }
   }
 
   // dynamically add subject to timetable
@@ -72,8 +84,5 @@ export class TimetablePage {
       slot[day] = subject;
     }
   }
-
-  // helper function to get object keys
-  objectKeys = (obj: object): string[] => Object.keys(obj);
 
 }

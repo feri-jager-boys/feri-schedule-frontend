@@ -5,11 +5,15 @@ import { Injectable } from '@angular/core';
 })
 export class ProgramDataSharingService {
 
+  private selectedGradeId: string | null = null;
   private selectedProgram: string | null = null;
   private selectedYear: number | null = null;
-  private classes: { [className: string]: [string, boolean][] } = {};  // Array to hold the classes (className: [[RV1, true], ...])
+  private classes: string[] | null = null;
 
   constructor() {}
+
+  getSelectedGradeId = (): string | null => this.selectedGradeId;
+  setSelectedGradeId = (programId: string | null) => this.selectedGradeId = programId;
 
   getSelectedProgram = (): string | null => this.selectedProgram;
   setSelectedProgram = (program: string | null) => this.selectedProgram = program;
@@ -17,6 +21,6 @@ export class ProgramDataSharingService {
   getSelectedYear = (): number | null => this.selectedYear;
   setSelectedYear = (year: number | null) => this.selectedYear = year;
 
-  getClasses = (): { [className: string]: [string, boolean][] } => this.classes;
-  setClasses = (classes: { [className: string]: [string, boolean][] }) => this.classes = classes;
+  getClasses = (): string[] | null => this.classes;
+  setClasses = (classes: string[] | null) => this.classes = classes;
 }

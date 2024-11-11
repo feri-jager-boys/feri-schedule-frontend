@@ -22,14 +22,15 @@ import { addIcons } from 'ionicons';
 export class SettingsPage implements OnInit {
   @ViewChild('classOptionsModal') classOptionsModal!: IonModal;
 
-  selectedProgram!: string | null;
+  selectedProgram!: any;
   selectedYear!: number | null;
-  classes!: { [className: string]: [string, boolean][] };
-
-  programs: {[programName: string]: number[]} = this.loadPrograms();  // Array to hold the programs 
+  
+  programs: any = []                                                  // Array to hold the programs 
   years: number[] = [];                                               // Array to hold the years of program
+  classes!: string[] | null;                                          // Array to hold the classes
   
   currentClassName: string | null = null;                             // Current class name for modal window
+  selectedGradeId: string | null = null;                               // Current program/grade id
 
   constructor(public dataSharingService: ProgramDataSharingService) {
     addIcons({ chevronForwardOutline, chevronBackOutline });
@@ -37,8 +38,12 @@ export class SettingsPage implements OnInit {
 
   ngOnInit() {
     // LoadSharedData on first initialization
+    this.fetchPrograms();
     this.loadSharedData();
   }
+
+  // Helper function to return the keys of 'classes' object
+  objectKeys = (obj: object): string[] => Object.keys(obj);
 
   private loadSharedData() {
     this.selectedProgram = this.dataSharingService.getSelectedProgram();
@@ -46,84 +51,50 @@ export class SettingsPage implements OnInit {
     this.classes = this.dataSharingService.getClasses();
   }
 
-  // Helper function to return the keys of 'classes' object
-  objectKeys = (obj: object): string[] => Object.keys(obj);
-
-  private loadPrograms() {
-    return {
-      'ELEKTROTEHNIKA (BU10)': [1, 2, 3],
-      'ELEKTROTEHNIKA (BV10)': [1, 2, 3],
-      'INFORMATIKA IN PODATKOVNE TEHNOLOGIJE (BU80)': [1, 2, 3],
-      'INFORMATIKA IN PODATKOVNE TEHNOLOGIJE (BV80)': [1, 2, 3],
-      'MEDIJSKE KOMUNIKACIJE (BU50)': [1, 2, 3],
-      'RAČUNALNIŠTVO IN INFORMACIJSKE TEHNOLOGIJE (BU20)': [1, 2, 3],
-      'RAČUNALNIŠTVO IN INFORMACIJSKE TEHNOLOGIJE (BV20)': [1, 2, 3],
-      'TELEKOMUNIKACIJE (BU40)': [1, 2, 3],
-      'MEHATRONIKA (BU70)': [1, 2, 3],
-      'MEHATRONIKA (BV70)': [1, 2, 3],
-      'MEHATRONIKA (BMM7) - 2. stopnja': [1, 2],
-      'ELEKTROTEHNIKA (BM10) - 2. stopnja': [1, 2],
-      'INFORMATIKA IN PODATKOVNE TEHNOLOGIJE (BM80) - 2. stopnja': [1, 2],
-      'MEDIJSKE KOMUNIKACIJE (BM50) - 2. stopnja': [1, 2],
-      'RAČUNALNIŠTVO IN INFORMACIJSKE TEHNOLOGIJE (BM20) - 2. stopnja': [1, 2],
-      'TELEKOMUNIKACIJE (BM40) - 2. stopnja': [1, 2],
-      'ERASMUS': [1],
-      'KOOD': [1],
-      'ATHENA': [1],
-    };
+  private setSharedData() {
+    this.dataSharingService.setSelectedGradeId(this.selectedGradeId);
+    this.dataSharingService.setSelectedProgram(this.selectedProgram.name);
+    this.dataSharingService.setSelectedYear(this.selectedYear);
+    this.dataSharingService.setClasses(this.classes);
   }
 
-  fetchProgramYears() {
+  private async fetchPrograms() {
+    try {
+      const url = "http://localhost:3080/schedule/getprograms"
+      const res = await fetch(url);
+      const data = await res.json();
+      this.programs = data;
+    } catch (error) {
+      console.error('Error while getting programs:', error);
+    }
+  }
+
+  getProgramYears() {
     if (!this.selectedProgram) return;
 
-    console.log('Fetching years for program: ' + this.selectedProgram);
+    console.log('Fetching years for program: ' + this.selectedProgram.name);
+    this.years = []; // Reset the years
     this.selectedYear = null; // Reset the selected year
 
-    this.years = this.programs[this.selectedProgram];
+    for (const gradeItem of this.selectedProgram.gradeItems) {
+        this.years.push(gradeItem.grade);
+    }
   }
 
-  fetchProgramClasses() {
+  getProgramClasses() {
     if (!this.selectedProgram || !this.selectedYear) return;
 
-    console.log('Fetching classes for program: ' + this.selectedProgram + ' year: ' + this.selectedYear);
-    this.classes = {}; // Reset the classes
+    console.log('Fetching classes for program: ' + this.selectedProgram.name + ' year: ' + this.selectedYear);
+    this.classes = []; // Reset the classes
 
-    // TODO: API call to fetch classes and RV groups
-    // classname: [[group, visibility], [group, visibility], ...]
-    this.classes = {
-      'RAZVOJ IN UPRAVLJANJE PROGRAMSKIH SISTEMOV': [
-        ['RV1', true],
-        ['RV2', true],
-        ['RV3', true],
-        ['RV4', true]],
-      'IZBRANI ALGORITMI': [
-        ['RV1', true], 
-        ['RV2', true], 
-        ['RV3', true], 
-        ['RV4', true]],
-      'SPLETNE TEHNOLOGIJE': [
-        ['RV1', true], 
-        ['RV2', true], 
-        ['RV3', true], 
-        ['RV4', true], 
-        ['RV5', true]],
-      'RAČUNALNIŠKA MULTIMEDIA': [
-        ['RV1', true], 
-        ['RV2', true], 
-        ['RV3', true], 
-        ['RV4', true]],
-      'DOMENSKO SPECIFIČNI MODELIRNI JEZIKI': [
-        ['RV1', true], 
-        ['RV2', true], 
-        ['RV3', true], 
-        ['RV4', true]],
-    };
+    // gets GradeItem object for selected year
+    const selectedGrade = this.selectedProgram.gradeItems.find((g: any) => g.grade === this.selectedYear);
 
-    // Setup the classes
-    for (const className in this.classes) {
-      this.classes[className].unshift(['Predavanje', true]); // Add 'Predavanje' to each class
-    }
-    // console.log(this.classes); // Debug
+    // save selected grade id
+    this.selectedGradeId = selectedGrade.gradeId;
+
+    // gets subjects array from GradeItem object
+    this.classes = selectedGrade.subjects;
   }
 
 
@@ -140,16 +111,19 @@ export class SettingsPage implements OnInit {
   onWillDismiss(event: Event) {
     const ev = event as CustomEvent<OverlayEventDetail<string>>;
     if (ev.detail.role === 'confirm' && this.currentClassName) {
-      console.log('Class options:', this.classes[this.currentClassName]); // when closing the modal log the class options
+      console.log('Class options for class: ' + this.currentClassName);
     }
     this.currentClassName = null;
   }
 
   ionViewWillLeave() {
-    // When changing tabs set the selected program, year, and classes in the data-sharing service
-    this.dataSharingService.setSelectedProgram(this.selectedProgram);
-    this.dataSharingService.setSelectedYear(this.selectedYear);
-    this.dataSharingService.setClasses(this.classes);
+    // When changing tabs set the selected gradeID, programName, programYear, and classes in the data-sharing service
+
+    // set shared data only if the selected program has changed
+    if (this.dataSharingService.getSelectedGradeId() !== this.selectedGradeId) {
+      this.setSharedData();
+    }
+
   }
 
 }
